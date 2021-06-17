@@ -22,22 +22,26 @@ interface LoginDataProps {
 type LoginListDataProps = LoginDataProps[];
 
 export function Home() {
-  // const [searchListData, setSearchListData] = useState<LoginListDataProps>([]);
-  // const [data, setData] = useState<LoginListDataProps>([]);
+  const [searchListData, setSearchListData] = useState<LoginListDataProps>([]);
+  const [data, setData] = useState<LoginListDataProps>([]);
 
   async function loadData() {
-    // Get asyncStorage data, use setSearchListData and setData
+    const passwords = await AsyncStorage.getItem('@passmanager:logins');
+    const formattedPasswords = passwords ? JSON.parse(passwords) : [];
+
+    setSearchListData(formattedPasswords);
+    setData(formattedPasswords);
   }
-  useEffect(() => {
-    loadData();
-  }, []);
 
   useFocusEffect(useCallback(() => {
     loadData();
   }, []));
 
-  function handleFilterLoginData(search: string) {
-    // Filter results inside data, save with setSearchListData
+  async function handleFilterLoginData(search: string) {
+    if (search !== '') {
+      const filteredPasswords = data.filter(password => password.title === search);
+      setSearchListData(filteredPasswords);
+    }
   }
 
   return (

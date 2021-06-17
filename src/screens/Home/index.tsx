@@ -41,6 +41,8 @@ export function Home() {
     if (search !== '') {
       const filteredPasswords = data.filter(password => password.title === search);
       setSearchListData(filteredPasswords);
+    } else {
+      setSearchListData(data);
     }
   }
 

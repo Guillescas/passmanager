@@ -4,8 +4,10 @@ import { useForm } from 'react-hook-form';
 import { RFValue } from 'react-native-responsive-fontsize';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
+
+import { useNavigation } from '@react-navigation/native';
+import { useStorageData } from '../../hooks/useStorageData';
 
 import { Input } from '../../components/Form/Input';
 import { Button } from '../../components/Form/Button';
@@ -13,7 +15,7 @@ import { Button } from '../../components/Form/Button';
 import {
   Container,
   HeaderTitle,
-  Form
+  Form,
 } from './styles';
 
 interface FormData {
@@ -39,6 +41,8 @@ export function RegisterLoginData() {
   } = useForm({
     resolver: yupResolver(schema),
   });
+  const navigation = useNavigation();
+  const { setLogin } = useStorageData()
 
   async function handleRegister(formData: FormData) {
     const newLoginData = {
@@ -46,20 +50,13 @@ export function RegisterLoginData() {
       ...formData
     }
 
-    schema.validate
+    schema.validate;
 
     try {
-      const passwords = await AsyncStorage.getItem('@passmanager:logins');
-      const formattedPasswords = passwords ? JSON.parse(passwords) : [];
-  
-      const updatedStorageData = [
-        ...formattedPasswords,
-        newLoginData,
-      ]
-  
-      await AsyncStorage.setItem('@passmanager:logins', JSON.stringify(updatedStorageData));
+      await setLogin(newLoginData);
 
       reset();
+      navigation.navigate('Home');
     } catch (error) {
       Alert.alert('Erro inesperado. Tente novamente mais tarde');
     }
